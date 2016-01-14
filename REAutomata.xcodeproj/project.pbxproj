@@ -7,20 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		50E0AFD61C46EF710082C360 /* RegularExpressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E0AFD51C46EF710082C360 /* RegularExpressionTest.swift */; };
-		50E0AFDB1C46EFE70082C360 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5FB2AFB2359E63BDEA95BC /* main.swift */; };
+		50E0AFE81C4842A40082C360 /* REAutomataTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E0AFE71C4842A40082C360 /* REAutomataTest.swift */; };
+		50E0AFED1C4842E00082C360 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5FB2AFB2359E63BDEA95BC /* main.swift */; };
 		AC5FBDC84C86A5DBF7EFCFF3 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5FB2AFB2359E63BDEA95BC /* main.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		50E0AFDC1C46EFF40082C360 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AC5FB8AA77B6B68828C2EDAE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AC5FB8927C0438EDCC21A15A;
-			remoteInfo = RegularExpression;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		AC5FB50D3F92A6F3781AF9FC /* CopyFiles */ = {
@@ -35,15 +25,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		50E0AFD31C46EF710082C360 /* RegularExpressionTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RegularExpressionTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		50E0AFD51C46EF710082C360 /* RegularExpressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegularExpressionTest.swift; sourceTree = "<group>"; };
-		50E0AFD71C46EF710082C360 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		50E0AFD31C46EF710082C360 /* REAutomata.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = REAutomata.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		50E0AFE51C4842A40082C360 /* REAutomataTest.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = REAutomataTest.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		50E0AFE71C4842A40082C360 /* REAutomataTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = REAutomataTest.swift; sourceTree = "<group>"; };
+		50E0AFE91C4842A40082C360 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC5FB2AFB2359E63BDEA95BC /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		AC5FBD9A4A50C678CEA5FBF1 /* RegularExpression */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RegularExpression; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC5FBD9A4A50C678CEA5FBF1 /* REAutomata */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = REAutomata; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		50E0AFD01C46EF710082C360 /* Frameworks */ = {
+		50E0AFE21C4842A40082C360 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -60,20 +51,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		50E0AFD41C46EF710082C360 /* RegularExpressionTest */ = {
+		50E0AFE61C4842A40082C360 /* REAutomataTest */ = {
 			isa = PBXGroup;
 			children = (
-				50E0AFD51C46EF710082C360 /* RegularExpressionTest.swift */,
-				50E0AFD71C46EF710082C360 /* Info.plist */,
+				50E0AFE71C4842A40082C360 /* REAutomataTest.swift */,
+				50E0AFE91C4842A40082C360 /* Info.plist */,
 			);
-			path = RegularExpressionTest;
+			path = REAutomataTest;
 			sourceTree = "<group>";
 		};
 		AC5FB3FF86EE1FBD714E00E0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AC5FBD9A4A50C678CEA5FBF1 /* RegularExpression */,
-				50E0AFD31C46EF710082C360 /* RegularExpressionTest.xctest */,
+				AC5FBD9A4A50C678CEA5FBF1 /* REAutomata */,
+				50E0AFD31C46EF710082C360 /* REAutomata.xctest */,
+				50E0AFE51C4842A40082C360 /* REAutomataTest.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -81,44 +73,43 @@
 		AC5FB47600E1A456C11DC141 = {
 			isa = PBXGroup;
 			children = (
-				50E0AFD41C46EF710082C360 /* RegularExpressionTest */,
+				50E0AFE61C4842A40082C360 /* REAutomataTest */,
 				AC5FB3FF86EE1FBD714E00E0 /* Products */,
-				AC5FBAD6E2C4552C4F76CDFE /* RegularExpression */,
+				AC5FBAD6E2C4552C4F76CDFE /* REAutomata */,
 			);
 			sourceTree = "<group>";
 		};
-		AC5FBAD6E2C4552C4F76CDFE /* RegularExpression */ = {
+		AC5FBAD6E2C4552C4F76CDFE /* REAutomata */ = {
 			isa = PBXGroup;
 			children = (
 				AC5FB2AFB2359E63BDEA95BC /* main.swift */,
 			);
-			path = RegularExpression;
+			path = REAutomata;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		50E0AFD21C46EF710082C360 /* RegularExpressionTest */ = {
+		50E0AFE41C4842A40082C360 /* REAutomataTest */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 50E0AFD81C46EF710082C360 /* Build configuration list for PBXNativeTarget "RegularExpressionTest" */;
+			buildConfigurationList = 50E0AFEC1C4842A40082C360 /* Build configuration list for PBXNativeTarget "REAutomataTest" */;
 			buildPhases = (
-				50E0AFCF1C46EF710082C360 /* Sources */,
-				50E0AFD01C46EF710082C360 /* Frameworks */,
-				50E0AFD11C46EF710082C360 /* Resources */,
+				50E0AFE11C4842A40082C360 /* Sources */,
+				50E0AFE21C4842A40082C360 /* Frameworks */,
+				50E0AFE31C4842A40082C360 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				50E0AFDD1C46EFF40082C360 /* PBXTargetDependency */,
 			);
-			name = RegularExpressionTest;
-			productName = RegularExpressionTest;
-			productReference = 50E0AFD31C46EF710082C360 /* RegularExpressionTest.xctest */;
+			name = REAutomataTest;
+			productName = REAutomataTest;
+			productReference = 50E0AFE51C4842A40082C360 /* REAutomataTest.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		AC5FB8927C0438EDCC21A15A /* RegularExpression */ = {
+		AC5FB8927C0438EDCC21A15A /* REAutomata */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AC5FB760265733FF0DBF0805 /* Build configuration list for PBXNativeTarget "RegularExpression" */;
+			buildConfigurationList = AC5FB760265733FF0DBF0805 /* Build configuration list for PBXNativeTarget "REAutomata" */;
 			buildPhases = (
 				AC5FB66DE02A256334111E3F /* Sources */,
 				AC5FB6C32E1A42A3EB04DC47 /* Frameworks */,
@@ -128,9 +119,9 @@
 			);
 			dependencies = (
 			);
-			name = RegularExpression;
-			productName = RegularExpression;
-			productReference = AC5FBD9A4A50C678CEA5FBF1 /* RegularExpression */;
+			name = REAutomata;
+			productName = REAutomata;
+			productReference = AC5FBD9A4A50C678CEA5FBF1 /* REAutomata */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -142,12 +133,12 @@
 				LastSwiftUpdateCheck = 0720;
 				ORGANIZATIONNAME = edfward;
 				TargetAttributes = {
-					50E0AFD21C46EF710082C360 = {
+					50E0AFE41C4842A40082C360 = {
 						CreatedOnToolsVersion = 7.2;
 					};
 				};
 			};
-			buildConfigurationList = AC5FB0CD6317C3B92DDDBAF7 /* Build configuration list for PBXProject "RegularExpression" */;
+			buildConfigurationList = AC5FB0CD6317C3B92DDDBAF7 /* Build configuration list for PBXProject "REAutomata" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -159,14 +150,14 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AC5FB8927C0438EDCC21A15A /* RegularExpression */,
-				50E0AFD21C46EF710082C360 /* RegularExpressionTest */,
+				AC5FB8927C0438EDCC21A15A /* REAutomata */,
+				50E0AFE41C4842A40082C360 /* REAutomataTest */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		50E0AFD11C46EF710082C360 /* Resources */ = {
+		50E0AFE31C4842A40082C360 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -176,12 +167,12 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		50E0AFCF1C46EF710082C360 /* Sources */ = {
+		50E0AFE11C4842A40082C360 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				50E0AFDB1C46EFE70082C360 /* main.swift in Sources */,
-				50E0AFD61C46EF710082C360 /* RegularExpressionTest.swift in Sources */,
+				50E0AFED1C4842E00082C360 /* main.swift in Sources */,
+				50E0AFE81C4842A40082C360 /* REAutomataTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,33 +186,25 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		50E0AFDD1C46EFF40082C360 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AC5FB8927C0438EDCC21A15A /* RegularExpression */;
-			targetProxy = 50E0AFDC1C46EFF40082C360 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		50E0AFD91C46EF710082C360 /* Debug */ = {
+		50E0AFEA1C4842A40082C360 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = RegularExpressionTest/Info.plist;
+				INFOPLIST_FILE = REAutomataTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.junjiah.RegularExpressionTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.junjiah.REAutomataTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		50E0AFDA1C46EF710082C360 /* Release */ = {
+		50E0AFEB1C4842A40082C360 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = RegularExpressionTest/Info.plist;
+				INFOPLIST_FILE = REAutomataTest/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.junjiah.RegularExpressionTest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.junjiah.REAutomataTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -229,7 +212,7 @@
 		AC5FB27D0AC31C8A4B8D0C10 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = REAutomata;
 			};
 			name = Debug;
 		};
@@ -280,7 +263,7 @@
 		AC5FB991F5E16DBA8FFF7ED5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = REAutomata;
 			};
 			name = Release;
 		};
@@ -323,15 +306,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		50E0AFD81C46EF710082C360 /* Build configuration list for PBXNativeTarget "RegularExpressionTest" */ = {
+		50E0AFEC1C4842A40082C360 /* Build configuration list for PBXNativeTarget "REAutomataTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				50E0AFD91C46EF710082C360 /* Debug */,
-				50E0AFDA1C46EF710082C360 /* Release */,
+				50E0AFEA1C4842A40082C360 /* Debug */,
+				50E0AFEB1C4842A40082C360 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
-		AC5FB0CD6317C3B92DDDBAF7 /* Build configuration list for PBXProject "RegularExpression" */ = {
+		AC5FB0CD6317C3B92DDDBAF7 /* Build configuration list for PBXProject "REAutomata" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AC5FB89062CB414A68C44671 /* Debug */,
@@ -340,7 +323,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AC5FB760265733FF0DBF0805 /* Build configuration list for PBXNativeTarget "RegularExpression" */ = {
+		AC5FB760265733FF0DBF0805 /* Build configuration list for PBXNativeTarget "REAutomata" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AC5FB27D0AC31C8A4B8D0C10 /* Debug */,

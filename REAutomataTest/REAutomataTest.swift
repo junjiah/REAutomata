@@ -94,6 +94,7 @@ class REAutomataTest: XCTestCase {
     XCTAssertTrue(re.test("1100"))
     XCTAssertTrue(re.test("1111"))
     XCTAssertTrue(re.test("00000"))
+    XCTAssertTrue(re.test("0011110100001000111111"))
 
     XCTAssertFalse(re.test("1"))
     XCTAssertFalse(re.test("10"))
@@ -106,9 +107,9 @@ class REAutomataTest: XCTestCase {
 
   func testPerformance() {
     self.measureBlock {
-      let re = REAutomata(expr: "101|0011|1110|1|11001|000111|000000|111111")
+      let re = REAutomata(expr: "(0|(1(01*(00)*0)*1)*)*")
       for var i = 0; i < 10; i++ {
-        re.test("11110000011111000000")
+        re.test("001011101001000011101101110011111111111")
       }
     }
   }
