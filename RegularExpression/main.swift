@@ -2,13 +2,14 @@
 
 import Foundation
 
-enum EdgeType {
-  case Epsilon
-  case Normal(Character)
-}
-
 // Labeled edge in automata.
 struct Edge {
+
+  enum EdgeType {
+    case Epsilon
+    case Normal(Character)
+  }
+
   let type: EdgeType
   let dest: State
 
@@ -18,12 +19,10 @@ struct Edge {
   }
 }
 
-class State: Hashable, Equatable {
-  private var neighbors: [Edge]
 
-  init() {
-    self.neighbors = [Edge]()
-  }
+class State: Hashable, Equatable {
+
+  private var neighbors: [Edge] = [Edge]()
 
   func addEdge(edge: Edge) {
     neighbors.append(edge)
@@ -74,37 +73,75 @@ func ==(lhs: State, rhs: State) -> Bool {
   return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
 }
 
-// Regular Expressions to recognize binary string patterns.
-// For now, only "0, 1, +" can be used.
-public class RegularExpression {
+/// Concatenation of two ϵ-NFAs, with respective start states and terminal states.
+/// Return new start state and terminal state.
+/// [Concat Image](https://en.wikipedia.org/wiki/File:Thompson-concat.svg)
+func concat(automaton: (State, State), with anotherAutomaton: (State, State)) -> (State, State) {
+  let (start1, terminal1) = automaton
+  let (start2, terminal2) = anotherAutomaton
+  terminal1.addEdge(Edge(.Epsilon, dest: start2))
+  return (start1, terminal2)
+}
+
+/// Union of two ϵ-NFAs, similar to `concat`.
+/// [Union Image](https://en.wikipedia.org/wiki/File:Thompson-or.svg)
+func union(automaton: (State, State), with anotherAutomaton: (State, State)) -> (State, State) {
+  let (start1, terminal1) = automaton
+  let (start2, terminal2) = anotherAutomaton
+  let newStart = State()
+  let newTerminal = State()
+  newStart.addEdge(Edge(.Epsilon, dest: start1))
+  newStart.addEdge(Edge(.Epsilon, dest: start2))
+  terminal1.addEdge(Edge(.Epsilon, dest: newTerminal))
+  terminal2.addEdge(Edge(.Epsilon, dest: newTerminal))
+  return (newStart, newTerminal)
+}
+
+/// Closure of a ϵ-NFA by Kleene star, parameters and return arguments are similar to `concat` and `union`.
+/// [Closure Image](https://en.wikipedia.org/wiki/File:Thompson-kleene-star.svg)
+func closure(automaton: (State, State)) -> (State, State) {
+  let (start, terminal) = automaton
+  let newStart = State()
+  let newTerminal = State()
+  newStart.addEdge(Edge(.Epsilon, dest: start))
+  newStart.addEdge(Edge(.Epsilon, dest: newTerminal))
+  terminal.addEdge(Edge(.Epsilon, dest: start))
+  terminal.addEdge(Edge(.Epsilon, dest: newTerminal))
+  return (newStart, newTerminal)
+}
+
+func balancedBrackets(characters: [Character]) -> Dictionary<Int, Int> {
+  var matchingBrackets = Dictionary<Int, Int>()
+  var start = 0, end = characters.count - 1
+  while start < end {
+    while start < end && characters[start] != "(" {
+      start++
+    }
+    while end > start && characters[end] != ")" {
+      end--
+    }
+    if start < end {
+      matchingBrackets[start] = end
+      start++
+      end--
+    }
+  }
+  return matchingBrackets
+}
+
+/// Regular Expressions to recognize binary string patterns.
+/// NFS is built in [Thompson's construction](https://en.wikipedia.org/wiki/Thompson%27s_construction).
+/// Note: For now, only "0, 1, |, *" can be used.
+public class REAutomata {
 
   let start: State, terminal: State
-
-  // Concatenation of two ϵ-NFAs, with respective start states and final states.
-  // Return new start states and final states.
-  private static func concat(automaton: (State, State), with anotherAutomaton: (State, State)) -> (State, State) {
-    let (start1, terminal1) = automaton
-    let (start2, terminal2) = anotherAutomaton
-    terminal1.addEdge(Edge(.Epsilon, dest: start2))
-    return (start1, terminal2)
-  }
-
-  // Union of two ϵ-NFAs, similar to concatenation.
-  private static func union(automaton: (State, State), with anotherAutomaton: (State, State)) -> (State, State) {
-    let (start1, terminal1) = automaton
-    let (start2, terminal2) = anotherAutomaton
-    let newStart = State()
-    let newTerminal = State()
-    newStart.addEdge(Edge(.Epsilon, dest: start1))
-    newStart.addEdge(Edge(.Epsilon, dest: start2))
-    terminal1.addEdge(Edge(.Epsilon, dest: newTerminal))
-    terminal2.addEdge(Edge(.Epsilon, dest: newTerminal))
-    return (newStart, newTerminal)
-  }
 
   // Assume expressions always valid.
   init(expr: String) {
     let characters = [Character](expr.characters)
+    // Calculate positions of balanced brackets.
+    var matchingBrackets = balancedBrackets(characters)
+
     // Recursive lambda by hacks: http://rosettacode.org/wiki/Anonymous_recursion#Swift
     let parse: (Int, Int) -> (State, State) = {
       func parseHelper(startIndex: Int, _ endIndex: Int) -> (State, State) {
@@ -115,16 +152,37 @@ public class RegularExpression {
 
         loop: for var i = startIndex; i < endIndex; i++ {
           switch characters[i] {
-          case let ch where ch == "0" || ch == "1":
-            // Concatenation.
-            let anotherStart = State()
-            let anotherTerminal = State()
-            anotherStart.addEdge(Edge(.Normal(ch), dest: anotherTerminal))
+          case "0", "1", "(":
+            let ch = characters[i]
+            var anotherStart: State, anotherTerminal: State
+            // Next index to look ahead for Kleene star.
+            var nextIndex: Int
+            if ch == "(" {
+              nextIndex = matchingBrackets[i]!
+              (anotherStart, anotherTerminal) = parseHelper(i + 1, nextIndex)
+              nextIndex++
+            } else {
+              (anotherStart, anotherTerminal) = (State(), State())
+              // Concatenation.
+              anotherStart.addEdge(Edge(.Normal(ch), dest: anotherTerminal))
+              nextIndex = i + 1
+            }
+
+            // Look ahead for Kleene stars.
+            if nextIndex < endIndex && characters[nextIndex] == "*" {
+              // Apply Kleene closure of the new states.
+              (anotherStart, anotherTerminal) = closure((anotherStart, anotherTerminal))
+              // Skip until after the star.
+              i = nextIndex
+            } else {
+              // Back to the previous char.
+              i = nextIndex - 1
+            }
             // Update new start and terminal states.
-            (start, terminal) = RegularExpression.concat((start, terminal), with: (anotherStart, anotherTerminal))
-          case "+":
+            (start, terminal) = concat((start, terminal), with: (anotherStart, anotherTerminal))
+          case "|":
             let (anotherStart, anotherTerminal) = parseHelper(i + 1, endIndex)
-            (start, terminal) = RegularExpression.union((start, terminal), with: (anotherStart, anotherTerminal))
+            (start, terminal) = union((start, terminal), with: (anotherStart, anotherTerminal))
             break loop
           default:
             fatalError("Cannot recognize the expression.")
@@ -141,13 +199,13 @@ public class RegularExpression {
   public func test(s: String) -> Bool {
     var states: Set<State> = start.getClosure()
     for ch in s.characters {
-      states = states.reduce(Set<State>(), combine: { (set, state) in
-        set.union(state.step(ch))
+      states = states.reduce(Set<State>(), combine: { (acc, state) in
+        acc.union(state.step(ch))
       })
     }
     // Get the final set of states inside closures.
-    states = states.reduce(Set<State>(), combine: { (set, state) in
-      set.union(state.getClosure())
+    states = states.reduce(Set<State>(), combine: { (acc, state) in
+      acc.union(state.getClosure())
     })
     return states.contains(terminal)
   }
