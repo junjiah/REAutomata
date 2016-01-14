@@ -8,7 +8,6 @@ enum EdgeType {
 }
 
 // Labeled edge in automata.
-
 struct Edge {
   let type: EdgeType
   let dest: State
@@ -30,7 +29,7 @@ class State: Hashable, Equatable {
     neighbors.append(edge)
   }
 
-  func findClosure() -> Set<State> {
+  func getClosure() -> Set<State> {
     var closure: Set<State> = [self]
     // DFS with a stack.
     var stack: [State] = [self]
@@ -52,7 +51,7 @@ class State: Hashable, Equatable {
   }
 
   func step(ch: Character) -> Set<State> {
-    let closure: Set<State> = findClosure()
+    let closure: Set<State> = getClosure()
     return Set<State>(closure
       .flatMap({
         $0.neighbors
@@ -86,50 +85,70 @@ public class RegularExpression {
 
   // Concatenation of two ϵ-NFAs, with respective start states and final states.
   // Return new start states and final states.
-  private static func concat(automata: (State, State), with anotherAutomata: (State, State)) -> (State, State) {
-    let (start1, terminal1) = automata
-    let (start2, terminal2) = anotherAutomata
+  private static func concat(automaton: (State, State), with anotherAutomaton: (State, State)) -> (State, State) {
+    let (start1, terminal1) = automaton
+    let (start2, terminal2) = anotherAutomaton
     terminal1.addEdge(Edge(.Epsilon, dest: start2))
     return (start1, terminal2)
+  }
+
+  // Union of two ϵ-NFAs.
+  private static func union(automaton: (State, State), with anotherAutomaton: (State, State)) -> (State, State) {
+    let (start1, terminal1) = automaton
+    let (start2, terminal2) = anotherAutomaton
+    let newStart = State()
+    let newTerminal = State()
+    newStart.addEdge(Edge(.Epsilon, dest: start1))
+    newStart.addEdge(Edge(.Epsilon, dest: start2))
+    terminal1.addEdge(Edge(.Epsilon, dest: newTerminal))
+    terminal2.addEdge(Edge(.Epsilon, dest: newTerminal))
+    return (newStart, newTerminal)
   }
 
   // Always assume valid expressions.
   init(expr: String) {
     let characters = [Character](expr.characters)
-    let parse = { (startIndex: Int, endIndex: Int) -> (State, State) in
-      // Start by connecting with epsilon.
-      var start = State()
-      var terminal = State()
-      start.addEdge(Edge(.Epsilon, dest: terminal))
+    // Recursive lambda by hacks.
+    let parse: (Int, Int) -> (State, State) = {
+      func f(startIndex: Int, _ endIndex: Int) -> (State, State) {
+        // Start by connecting with epsilon.
+        var start = State()
+        var terminal = State()
+        start.addEdge(Edge(.Epsilon, dest: terminal))
 
-      for var i = startIndex; i < endIndex; i++ {
-        switch characters[i] {
+        loop: for var i = startIndex; i < endIndex; i++ {
+          switch characters[i] {
           case let ch where ch == "0" || ch == "1":
-          // Concatenation.
-          let anotherStart = State()
-          let anotherTerminal = State()
-          anotherStart.addEdge(Edge(.Normal(ch), dest: anotherTerminal))
-          // Update new start and terminal states.
-          (start, terminal) = RegularExpression.concat((start, terminal), with: (anotherStart, anotherTerminal))
+            // Concatenation.
+            let anotherStart = State()
+            let anotherTerminal = State()
+            anotherStart.addEdge(Edge(.Normal(ch), dest: anotherTerminal))
+            // Update new start and terminal states.
+            (start, terminal) = RegularExpression.concat((start, terminal), with: (anotherStart, anotherTerminal))
           case "+":
-          fatalError("Not implemented.")
-        default:
-          fatalError("Cannot recognize the expression.")
+            let (anotherStart, anotherTerminal) = f(i + 1, endIndex)
+            (start, terminal) = RegularExpression.union((start, terminal), with: (anotherStart, anotherTerminal))
+            break loop
+          default:
+            fatalError("Cannot recognize the expression.")
+          }
         }
+        return (start, terminal)
       }
-      return (start, terminal)
-    }
+      return f
+    }()
 
     (start, terminal) = parse(0, characters.count)
   }
 
   // Test string should always be of 0 or 1.
-  public func test(testString: String) -> Bool {
-    var states: Set<State> = start.findClosure()
-    for ch in testString.characters {
+  public func test(s: String) -> Bool {
+    var states: Set<State> = start.getClosure()
+    for ch in s.characters {
       states = Set<State>(states.flatMap { $0.step(ch) })
     }
+    states = Set<State>(states.flatMap { $0.getClosure() })
     return states.contains(terminal)
   }
-
+  
 }
