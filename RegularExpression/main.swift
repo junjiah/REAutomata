@@ -19,7 +19,7 @@ struct Edge {
 }
 
 class State: Hashable, Equatable {
-  var neighbors: [Edge]
+  private var neighbors: [Edge]
 
   init() {
     self.neighbors = [Edge]()
@@ -36,34 +36,31 @@ class State: Hashable, Equatable {
     while !stack.isEmpty {
       let poppedState = stack.removeLast()
       poppedState.neighbors
-        .filter {
-          switch $0.type {
-          case .Epsilon:
-            return !closure.contains($0.dest)
-          default: return false
+        .forEach({ edge in
+          switch edge.type {
+          case .Epsilon where !closure.contains(edge.dest):
+            closure.insert(edge.dest)
+            stack.append(edge.dest)
+          default: break
           }
-        }.forEach({
-          closure.insert($0.dest)
-          stack.append($0.dest)
         })
     }
     return closure
   }
 
   func step(ch: Character) -> Set<State> {
-    let closure: Set<State> = getClosure()
-    return Set<State>(closure
-      .flatMap({
-        $0.neighbors
-          .filter { edge in
-            switch edge.type {
-            case .Normal(let edgeCh):
-              return edgeCh == ch
-            default: return false
-            }
-          }.map { $0.dest }
-      })
-    )
+    var nextStates = Set<State>()
+    for state in getClosure() {
+      state.neighbors
+        .forEach({ edge in
+          switch edge.type {
+          case .Normal(ch):
+            nextStates.insert(edge.dest)
+          default: break
+          }
+        })
+    }
+    return nextStates
   }
 
   var hashValue: Int {
@@ -92,7 +89,7 @@ public class RegularExpression {
     return (start1, terminal2)
   }
 
-  // Union of two ϵ-NFAs.
+  // Union of two ϵ-NFAs, similar to concatenation.
   private static func union(automaton: (State, State), with anotherAutomaton: (State, State)) -> (State, State) {
     let (start1, terminal1) = automaton
     let (start2, terminal2) = anotherAutomaton
@@ -105,12 +102,12 @@ public class RegularExpression {
     return (newStart, newTerminal)
   }
 
-  // Always assume valid expressions.
+  // Assume expressions always valid.
   init(expr: String) {
     let characters = [Character](expr.characters)
-    // Recursive lambda by hacks.
+    // Recursive lambda by hacks: http://rosettacode.org/wiki/Anonymous_recursion#Swift
     let parse: (Int, Int) -> (State, State) = {
-      func f(startIndex: Int, _ endIndex: Int) -> (State, State) {
+      func parseHelper(startIndex: Int, _ endIndex: Int) -> (State, State) {
         // Start by connecting with epsilon.
         var start = State()
         var terminal = State()
@@ -126,7 +123,7 @@ public class RegularExpression {
             // Update new start and terminal states.
             (start, terminal) = RegularExpression.concat((start, terminal), with: (anotherStart, anotherTerminal))
           case "+":
-            let (anotherStart, anotherTerminal) = f(i + 1, endIndex)
+            let (anotherStart, anotherTerminal) = parseHelper(i + 1, endIndex)
             (start, terminal) = RegularExpression.union((start, terminal), with: (anotherStart, anotherTerminal))
             break loop
           default:
@@ -135,19 +132,23 @@ public class RegularExpression {
         }
         return (start, terminal)
       }
-      return f
+      return parseHelper
     }()
 
     (start, terminal) = parse(0, characters.count)
   }
 
-  // Test string should always be of 0 or 1.
   public func test(s: String) -> Bool {
     var states: Set<State> = start.getClosure()
     for ch in s.characters {
-      states = Set<State>(states.flatMap { $0.step(ch) })
+      states = states.reduce(Set<State>(), combine: { (set, state) in
+        set.union(state.step(ch))
+      })
     }
-    states = Set<State>(states.flatMap { $0.getClosure() })
+    // Get the final set of states inside closures.
+    states = states.reduce(Set<State>(), combine: { (set, state) in
+      set.union(state.getClosure())
+    })
     return states.contains(terminal)
   }
   

@@ -52,4 +52,13 @@ class RegularExpressionTest: XCTestCase {
     XCTAssertFalse(re.test("00"))
     XCTAssertFalse(re.test("1111"))
   }
+
+  func testPerformance() {
+    self.measureBlock {
+      let re = RegularExpression(expr: "101+0011+1110+1+11001+000111+000000+111111")
+      for var i = 0; i < 10; i++ {
+        re.test("11110000011111000000")
+      }
+    }
+  }
 }
