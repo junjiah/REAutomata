@@ -47,6 +47,7 @@ class State: Hashable, Equatable {
     return closure
   }
 
+  // NFA stepping.
   func step(ch: Character) -> Set<State> {
     var nextStates = Set<State>()
     for state in getClosure() {
@@ -60,6 +61,20 @@ class State: Hashable, Equatable {
         })
     }
     return nextStates
+  }
+
+  // DFA stepping.
+  func step(ch: Character) -> State? {
+    guard let index = neighbors.indexOf({ edge in
+      switch edge.type {
+      case .Normal(ch): return true
+      default: return false
+      }
+    }) else {
+      return nil
+    }
+
+    return neighbors[index].dest
   }
 
   var hashValue: Int {
@@ -130,14 +145,19 @@ func balancedBrackets(characters: [Character]) -> Dictionary<Int, Int> {
 }
 
 /// Regular Expressions to recognize binary string patterns.
-/// NFS is built in [Thompson's construction](https://en.wikipedia.org/wiki/Thompson%27s_construction).
-/// Note: For now, only "0, 1, |, *" can be used.
+/// NFA is built in [Thompson's construction](https://en.wikipedia.org/wiki/Thompson%27s_construction),
+/// and could optionally convert to DFA if specified.
+/// Only "0, 1, |, *, (, )" can be used.
 public class REAutomata {
 
-  let start: State, terminal: State
+  // Start and terminal NFA states.
+  let nfa: (start: State, terminal: State)
+
+  // Optional DFA. Used only when `compileToDFA` flag is set for contruction.
+  var dfa: (start: State, terminals: Set<State>)?
 
   // Assume expressions always valid.
-  init(expr: String) {
+  init(expr: String, compileToDFA: Bool = false) {
     let characters = [Character](expr.characters)
     // Calculate positions of balanced brackets.
     var matchingBrackets = balancedBrackets(characters)
@@ -193,11 +213,61 @@ public class REAutomata {
       return parseHelper
     }()
 
-    (start, terminal) = parse(0, characters.count)
+    self.nfa = parse(0, characters.count)
+    if compileToDFA {
+      self.compileToDFA()
+    }
   }
 
-  public func test(s: String) -> Bool {
-    var states: Set<State> = start.getClosure()
+  private func compileToDFA() {
+    let alphabet: [Character] = ["0", "1"]
+    // Mapping from NFA states to their corresponding DFA state.
+    var nfa2dfa = Dictionary<Set<State>, State>()
+    let findOrInsert = { (nfaStates: Set<State>) -> State in
+      if let s = nfa2dfa[nfaStates] {
+        return s
+      } else {
+        let dfaState = State()
+        nfa2dfa[nfaStates] = dfaState
+        return dfaState
+      }
+    }
+
+    // Traverse by DFS to add edges within DFA states.
+    let initNFAStates = self.nfa.start.getClosure()
+    self.dfa = (start: findOrInsert(initNFAStates), terminals: Set<State>())
+    var nfaStatesStack: [Set<State>] = [initNFAStates]
+    var nfaStatesVisited: Set<Set<State>> = []
+    while !nfaStatesStack.isEmpty {
+      let poppedNFAStates = nfaStatesStack.removeLast()
+      if nfaStatesVisited.contains(poppedNFAStates) { continue }
+
+      nfaStatesVisited.insert(poppedNFAStates)
+      let poppedDFAState = findOrInsert(poppedNFAStates)
+      // Mark terminal if containing terminal NFA state.
+      if poppedNFAStates.contains(self.nfa.terminal) {
+        self.dfa!.terminals.insert(poppedDFAState)
+      }
+
+      for ch in alphabet {
+        // Step.
+        var nextNFAStates = poppedNFAStates.reduce(Set<State>(), combine: { (acc, state) in
+          acc.union(state.step(ch))
+        })
+        // Then closure.
+        nextNFAStates = nextNFAStates.reduce(Set<State>(), combine: { $0.union($1.getClosure()) })
+        // Skip empty states.
+        if nextNFAStates.isEmpty { continue }
+
+        let nextDFAState = findOrInsert(nextNFAStates)
+        poppedDFAState.addEdge(Edge(.Normal(ch), dest: nextDFAState))
+        nfaStatesStack.append(nextNFAStates)
+      }
+    }
+  }
+
+  private func matchNFA(s: String) -> Bool {
+    var states: Set<State> = nfa.start.getClosure()
     for ch in s.characters {
       states = states.reduce(Set<State>(), combine: { (acc, state) in
         acc.union(state.step(ch))
@@ -207,7 +277,28 @@ public class REAutomata {
     states = states.reduce(Set<State>(), combine: { (acc, state) in
       acc.union(state.getClosure())
     })
-    return states.contains(terminal)
+    return states.contains(nfa.terminal)
+  }
+
+  private func matchDFA(s: String) -> Bool {
+    let (start, terminals) = dfa!
+    var state = start
+    for ch in s.characters {
+      if let newState: State = state.step(ch) {
+        state = newState
+      } else {
+        return false
+      }
+    }
+    return terminals.contains(state)
+  }
+
+  public func test(s: String) -> Bool {
+    if dfa == nil {
+      return matchNFA(s)
+    } else {
+      return matchDFA(s)
+    }
   }
   
 }
