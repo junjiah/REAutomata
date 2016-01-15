@@ -267,17 +267,19 @@ public class REAutomata {
   }
 
   private func matchNFA(s: String) -> Bool {
-    var states: Set<State> = nfa.start.getClosure()
+    let (start, terminal) = nfa
+    var states = start.getClosure()
     for ch in s.characters {
       states = states.reduce(Set<State>(), combine: { (acc, state) in
         acc.union(state.step(ch))
       })
+      if states.isEmpty {
+        return false
+      }
     }
-    // Get the final set of states inside closures.
-    states = states.reduce(Set<State>(), combine: { (acc, state) in
-      acc.union(state.getClosure())
-    })
-    return states.contains(nfa.terminal)
+    // Get the final set of states included in their closures.
+    states = states.reduce(Set<State>(), combine: { $0.union($1.getClosure()) })
+    return states.contains(terminal)
   }
 
   private func matchDFA(s: String) -> Bool {
