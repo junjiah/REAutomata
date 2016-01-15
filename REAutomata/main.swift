@@ -164,11 +164,11 @@ public class REAutomata {
 
     // Recursive lambda by hacks: http://rosettacode.org/wiki/Anonymous_recursion#Swift
     let parse: (Int, Int) -> (State, State) = {
+      // An adhoc / ugly / naive way of parsing.
       func parseHelper(startIndex: Int, _ endIndex: Int) -> (State, State) {
         // Start by connecting with epsilon.
         var start = State()
-        var terminal = State()
-        start.addEdge(Edge(.Epsilon, dest: terminal))
+        var terminal = start
 
         loop: for var i = startIndex; i < endIndex; i++ {
           switch characters[i] {
